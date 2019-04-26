@@ -1,0 +1,720 @@
+{
+  "DecisionTree": {
+    "Inflammation_eye": [
+      {
+        "Swelling": [
+          {
+            "Rash": [
+              {
+                "muscle_aches": [
+                  {
+                    "Loss_appetite": [
+                      {
+                        "Fever": [
+                          {
+                            "Joint_pain": [
+                              {
+                                "chest_pain": [
+                                  {
+                                    "headache": [
+                                      {
+                                        "memory_loss": [
+                                          {
+                                            "fatigue": [
+                                              {
+                                                "aches": [
+                                                  {
+                                                    "vomiting": [
+                                                      {
+                                                        "cough": [
+                                                          {
+                                                            "shortness_breath": [
+                                                              {
+                                                                "burning_sensation_urinating": [
+                                                                  {
+                                                                    "blood_urine": [
+                                                                      {
+                                                                        "new_lump_breast_underarm": [
+                                                                          {
+                                                                            "inexplicable_weight_loss": [
+                                                                              {
+                                                                                "tender_lymph_nodes_develop_1_3_weeks_exposure": [
+                                                                                  {
+                                                                                    "discolored_patches_skin": [
+                                                                                      {
+                                                                                        "_flag": "l",
+                                                                                        "_p": "0.5",
+                                                                                        "_value": "1.0",
+                                                                                        "__text": "stroke"
+                                                                                      },
+                                                                                      {
+                                                                                        "_flag": "r",
+                                                                                        "_p": "0.5",
+                                                                                        "_value": "1.0",
+                                                                                        "__text": "leprosy"
+                                                                                      }
+                                                                                    ],
+                                                                                    "_flag": "l",
+                                                                                    "_p": "0.667",
+                                                                                    "_value": "1.0"
+                                                                                  },
+                                                                                  {
+                                                                                    "_flag": "r",
+                                                                                    "_p": "0.333",
+                                                                                    "_value": "1.0",
+                                                                                    "__text": "cat_scratch"
+                                                                                  }
+                                                                                ],
+                                                                                "_flag": "l",
+                                                                                "_p": "0.75",
+                                                                                "_value": "1.0"
+                                                                              },
+                                                                              {
+                                                                                "_flag": "r",
+                                                                                "_p": "0.25",
+                                                                                "_value": "1.0",
+                                                                                "__text": "diabet"
+                                                                              }
+                                                                            ],
+                                                                            "_flag": "l",
+                                                                            "_p": "0.8",
+                                                                            "_value": "1.0"
+                                                                          },
+                                                                          {
+                                                                            "_flag": "r",
+                                                                            "_p": "0.2",
+                                                                            "_value": "1.0",
+                                                                            "__text": "breast_cancer"
+                                                                          }
+                                                                        ],
+                                                                        "_flag": "l",
+                                                                        "_p": "0.833",
+                                                                        "_value": "1.0"
+                                                                      },
+                                                                      {
+                                                                        "_flag": "r",
+                                                                        "_p": "0.167",
+                                                                        "_value": "1.0",
+                                                                        "__text": "bladder_cancer"
+                                                                      }
+                                                                    ],
+                                                                    "_flag": "l",
+                                                                    "_p": "0.75",
+                                                                    "_value": "1.0"
+                                                                  },
+                                                                  {
+                                                                    "abnormal_vaginal_discharge": [
+                                                                      {
+                                                                        "_flag": "l",
+                                                                        "_p": "0.5",
+                                                                        "_value": "1.0",
+                                                                        "__text": "chlamyldia_men"
+                                                                      },
+                                                                      {
+                                                                        "_flag": "r",
+                                                                        "_p": "0.5",
+                                                                        "_value": "1.0",
+                                                                        "__text": "chlamyldia_women"
+                                                                      }
+                                                                    ],
+                                                                    "_flag": "r",
+                                                                    "_p": "0.25",
+                                                                    "_value": "1.0"
+                                                                  }
+                                                                ],
+                                                                "_flag": "l",
+                                                                "_p": "0.889",
+                                                                "_value": "1.0"
+                                                              },
+                                                              {
+                                                                "_flag": "r",
+                                                                "_p": "0.111",
+                                                                "_value": "1.0",
+                                                                "__text": "chronic_obstructive_pulmonary"
+                                                              }
+                                                            ],
+                                                            "_flag": "l",
+                                                            "_p": "0.9",
+                                                            "_value": "1.0"
+                                                          },
+                                                          {
+                                                            "_flag": "r",
+                                                            "_p": "0.1",
+                                                            "_value": "1.0",
+                                                            "__text": "measles"
+                                                          }
+                                                        ],
+                                                        "_flag": "l",
+                                                        "_p": "0.833",
+                                                        "_value": "1.0"
+                                                      },
+                                                      {
+                                                        "weight_loss": [
+                                                          {
+                                                            "_flag": "l",
+                                                            "_p": "0.5",
+                                                            "_value": "1.0",
+                                                            "__text": "cholera"
+                                                          },
+                                                          {
+                                                            "_flag": "r",
+                                                            "_p": "0.5",
+                                                            "_value": "1.0",
+                                                            "__text": "gadiasis"
+                                                          }
+                                                        ],
+                                                        "_flag": "r",
+                                                        "_p": "0.167",
+                                                        "_value": "1.0"
+                                                      }
+                                                    ],
+                                                    "_flag": "l",
+                                                    "_p": "0.8",
+                                                    "_value": "1.0"
+                                                  },
+                                                  {
+                                                    "blood_stool": [
+                                                      {
+                                                        "burning_sensation_urinating": [
+                                                          {
+                                                            "_flag": "l",
+                                                            "_p": "0.5",
+                                                            "_value": "1.0",
+                                                            "__text": "gonorrhea_women"
+                                                          },
+                                                          {
+                                                            "_flag": "r",
+                                                            "_p": "0.5",
+                                                            "_value": "1.0",
+                                                            "__text": "gonorrhea_men"
+                                                          }
+                                                        ],
+                                                        "_flag": "l",
+                                                        "_p": "0.667",
+                                                        "_value": "1.0"
+                                                      },
+                                                      {
+                                                        "_flag": "r",
+                                                        "_p": "0.333",
+                                                        "_value": "1.0",
+                                                        "__text": "colorectal_cancer"
+                                                      }
+                                                    ],
+                                                    "_flag": "r",
+                                                    "_p": "0.2",
+                                                    "_value": "1.0"
+                                                  }
+                                                ],
+                                                "_flag": "l",
+                                                "_p": "0.938",
+                                                "_value": "1.0"
+                                              },
+                                              {
+                                                "_flag": "r",
+                                                "_p": "0.062",
+                                                "_value": "1.0",
+                                                "__text": "ibd"
+                                              }
+                                            ],
+                                            "_flag": "l",
+                                            "_p": "0.941",
+                                            "_value": "1.0"
+                                          },
+                                          {
+                                            "_flag": "r",
+                                            "_p": "0.059",
+                                            "_value": "1.0",
+                                            "__text": "alzheimer"
+                                          }
+                                        ],
+                                        "_flag": "l",
+                                        "_p": "0.773",
+                                        "_value": "1.0"
+                                      },
+                                      {
+                                        "body_aches": [
+                                          {
+                                            "redness": [
+                                              {
+                                                "nausea": [
+                                                  {
+                                                    "_flag": "l",
+                                                    "_p": "0.5",
+                                                    "_value": "1.0",
+                                                    "__text": "head_neck_cancer"
+                                                  },
+                                                  {
+                                                    "_flag": "r",
+                                                    "_p": "0.5",
+                                                    "_value": "1.0",
+                                                    "__text": "bacterial_meningitis"
+                                                  }
+                                                ],
+                                                "_flag": "l",
+                                                "_p": "0.667",
+                                                "_value": "1.0"
+                                              },
+                                              {
+                                                "_flag": "r",
+                                                "_p": "0.333",
+                                                "_value": "1.0",
+                                                "__text": "chronique_fatigue"
+                                              }
+                                            ],
+                                            "_flag": "l",
+                                            "_p": "0.6",
+                                            "_value": "1.0"
+                                          },
+                                          {
+                                            "cough": [
+                                              {
+                                                "_flag": "l",
+                                                "_p": "0.5",
+                                                "_value": "1.0",
+                                                "__text": "smallpox"
+                                              },
+                                              {
+                                                "_flag": "r",
+                                                "_p": "0.5",
+                                                "_value": "1.0",
+                                                "__text": "cold"
+                                              }
+                                            ],
+                                            "_flag": "r",
+                                            "_p": "0.4",
+                                            "_value": "1.0"
+                                          }
+                                        ],
+                                        "_flag": "r",
+                                        "_p": "0.227",
+                                        "_value": "1.0"
+                                      }
+                                    ],
+                                    "_flag": "l",
+                                    "_p": "0.88",
+                                    "_value": "1.0"
+                                  },
+                                  {
+                                    "fatigue": [
+                                      {
+                                        "nausea": [
+                                          {
+                                            "_flag": "l",
+                                            "_p": "0.5",
+                                            "_value": "1.0",
+                                            "__text": "lung_cancer"
+                                          },
+                                          {
+                                            "_flag": "r",
+                                            "_p": "0.5",
+                                            "_value": "1.0",
+                                            "__text": "heart_disease"
+                                          }
+                                        ],
+                                        "_flag": "l",
+                                        "_p": "0.667",
+                                        "_value": "1.0"
+                                      },
+                                      {
+                                        "_flag": "r",
+                                        "_p": "0.333",
+                                        "_value": "1.0",
+                                        "__text": "pulmonary_hypertension"
+                                      }
+                                    ],
+                                    "_flag": "r",
+                                    "_p": "0.12",
+                                    "_value": "1.0"
+                                  }
+                                ],
+                                "_flag": "l",
+                                "_p": "0.962",
+                                "_value": "1.0"
+                              },
+                              {
+                                "_flag": "r",
+                                "_p": "0.038",
+                                "_value": "1.0",
+                                "__text": "hemopohilia"
+                              }
+                            ],
+                            "_flag": "l",
+                            "_p": "0.743",
+                            "_value": "1.0"
+                          },
+                          {
+                            "fatigue": [
+                              {
+                                "cough": [
+                                  {
+                                    "headache": [
+                                      {
+                                        "weakness": [
+                                          {
+                                            "_flag": "l",
+                                            "_p": "0.5",
+                                            "_value": "1.0",
+                                            "__text": "septicemic_plague"
+                                          },
+                                          {
+                                            "_flag": "r",
+                                            "_p": "0.5",
+                                            "_value": "1.0",
+                                            "__text": "diphteria"
+                                          }
+                                        ],
+                                        "_flag": "l",
+                                        "_p": "0.4",
+                                        "_value": "1.0"
+                                      },
+                                      {
+                                        "weakness": [
+                                          {
+                                            "diarrhea": [
+                                              {
+                                                "_flag": "l",
+                                                "_p": "0.5",
+                                                "_value": "1.0",
+                                                "__text": "malaria"
+                                              },
+                                              {
+                                                "_flag": "r",
+                                                "_p": "0.5",
+                                                "_value": "1.0",
+                                                "__text": "norovirus"
+                                              }
+                                            ],
+                                            "_flag": "l",
+                                            "_p": "0.667",
+                                            "_value": "1.0"
+                                          },
+                                          {
+                                            "_flag": "r",
+                                            "_p": "0.333",
+                                            "_value": "1.0",
+                                            "__text": "bubonic_plague"
+                                          }
+                                        ],
+                                        "_flag": "r",
+                                        "_p": "0.6",
+                                        "_value": "1.0"
+                                      }
+                                    ],
+                                    "_flag": "l",
+                                    "_p": "0.833",
+                                    "_value": "1.0"
+                                  },
+                                  {
+                                    "_flag": "r",
+                                    "_p": "0.167",
+                                    "_value": "1.0",
+                                    "__text": "pneumonic_plague"
+                                  }
+                                ],
+                                "_flag": "l",
+                                "_p": "0.667",
+                                "_value": "1.0"
+                              },
+                              {
+                                "Joint_pain": [
+                                  {
+                                    "pain_aching_one_joint": [
+                                      {
+                                        "_flag": "l",
+                                        "_p": "0.5",
+                                        "_value": "1.0",
+                                        "__text": "pneumocystis"
+                                      },
+                                      {
+                                        "_flag": "r",
+                                        "_p": "0.5",
+                                        "_value": "1.0",
+                                        "__text": "arthiritis_rhumatoid"
+                                      }
+                                    ],
+                                    "_flag": "l",
+                                    "_p": "0.667",
+                                    "_value": "1.0"
+                                  },
+                                  {
+                                    "_flag": "r",
+                                    "_p": "0.333",
+                                    "_value": "1.0",
+                                    "__text": "arthiritis_lupus"
+                                  }
+                                ],
+                                "_flag": "r",
+                                "_p": "0.333",
+                                "_value": "1.0"
+                              }
+                            ],
+                            "_flag": "r",
+                            "_p": "0.257",
+                            "_value": "1.0"
+                          }
+                        ],
+                        "_flag": "l",
+                        "_p": "0.854",
+                        "_value": "1.0"
+                      },
+                      {
+                        "tiredness": [
+                          {
+                            "Fever": [
+                              {
+                                "blood_urine": [
+                                  {
+                                    "_flag": "l",
+                                    "_p": "0.5",
+                                    "_value": "1.0",
+                                    "__text": "kidney_disease"
+                                  },
+                                  {
+                                    "_flag": "r",
+                                    "_p": "0.5",
+                                    "_value": "1.0",
+                                    "__text": "kidney_renalpelvis_cancer"
+                                  }
+                                ],
+                                "_flag": "l",
+                                "_p": "0.4",
+                                "_value": "1.0"
+                              },
+                              {
+                                "fatigue": [
+                                  {
+                                    "cough": [
+                                      {
+                                        "_flag": "l",
+                                        "_p": "0.5",
+                                        "_value": "1.0",
+                                        "__text": "viral_meningitis"
+                                      },
+                                      {
+                                        "_flag": "r",
+                                        "_p": "0.5",
+                                        "_value": "1.0",
+                                        "__text": "bronchiolitis"
+                                      }
+                                    ],
+                                    "_flag": "l",
+                                    "_p": "0.667",
+                                    "_value": "1.0"
+                                  },
+                                  {
+                                    "_flag": "r",
+                                    "_p": "0.333",
+                                    "_value": "1.0",
+                                    "__text": "tuberculosis"
+                                  }
+                                ],
+                                "_flag": "r",
+                                "_p": "0.6",
+                                "_value": "1.0"
+                              }
+                            ],
+                            "_flag": "l",
+                            "_p": "0.833",
+                            "_value": "1.0"
+                          },
+                          {
+                            "_flag": "r",
+                            "_p": "0.167",
+                            "_value": "1.0",
+                            "__text": "varicella"
+                          }
+                        ],
+                        "_flag": "r",
+                        "_p": "0.146",
+                        "_value": "1.0"
+                      }
+                    ],
+                    "_flag": "l",
+                    "_p": "0.891",
+                    "_value": "1.0"
+                  },
+                  {
+                    "headache": [
+                      {
+                        "fatigue": [
+                          {
+                            "_flag": "l",
+                            "_p": "0.5",
+                            "_value": "1.0",
+                            "__text": "avian_influenza"
+                          },
+                          {
+                            "_flag": "r",
+                            "_p": "0.5",
+                            "_value": "1.0",
+                            "__text": "ebola"
+                          }
+                        ],
+                        "_flag": "l",
+                        "_p": "0.4",
+                        "_value": "1.0"
+                      },
+                      {
+                        "tiredness": [
+                          {
+                            "seizures": [
+                              {
+                                "_flag": "l",
+                                "_p": "0.5",
+                                "_value": "1.0",
+                                "__text": "monkeypox"
+                              },
+                              {
+                                "_flag": "r",
+                                "_p": "0.5",
+                                "_value": "1.0",
+                                "__text": "tetanus"
+                              }
+                            ],
+                            "_flag": "l",
+                            "_p": "0.667",
+                            "_value": "1.0"
+                          },
+                          {
+                            "_flag": "r",
+                            "_p": "0.333",
+                            "_value": "1.0",
+                            "__text": "mumps"
+                          }
+                        ],
+                        "_flag": "r",
+                        "_p": "0.6",
+                        "_value": "1.0"
+                      }
+                    ],
+                    "_flag": "r",
+                    "_p": "0.109",
+                    "_value": "1.0"
+                  }
+                ],
+                "_flag": "l",
+                "_p": "0.868",
+                "_value": "1.0"
+              },
+              {
+                "Joint_pain": [
+                  {
+                    "cough": [
+                      {
+                        "fatigue": [
+                          {
+                            "_flag": "l",
+                            "_p": "0.5",
+                            "_value": "1.0",
+                            "__text": "kawasaki"
+                          },
+                          {
+                            "_flag": "r",
+                            "_p": "0.5",
+                            "_value": "1.0",
+                            "__text": "west_african_trypanosomiasis"
+                          }
+                        ],
+                        "_flag": "l",
+                        "_p": "0.4",
+                        "_value": "1.0"
+                      },
+                      {
+                        "nausea": [
+                          {
+                            "organ_inflammation": [
+                              {
+                                "_flag": "l",
+                                "_p": "0.5",
+                                "_value": "1.0",
+                                "__text": "bilharzia_children"
+                              },
+                              {
+                                "_flag": "r",
+                                "_p": "0.5",
+                                "_value": "1.0",
+                                "__text": "bilharzia"
+                              }
+                            ],
+                            "_flag": "l",
+                            "_p": "0.667",
+                            "_value": "1.0"
+                          },
+                          {
+                            "_flag": "r",
+                            "_p": "0.333",
+                            "_value": "1.0",
+                            "__text": "sorethroat"
+                          }
+                        ],
+                        "_flag": "r",
+                        "_p": "0.6",
+                        "_value": "1.0"
+                      }
+                    ],
+                    "_flag": "l",
+                    "_p": "0.714",
+                    "_value": "1.0"
+                  },
+                  {
+                    "Fever": [
+                      {
+                        "_flag": "l",
+                        "_p": "0.5",
+                        "_value": "1.0",
+                        "__text": "dengue"
+                      },
+                      {
+                        "_flag": "r",
+                        "_p": "0.5",
+                        "_value": "1.0",
+                        "__text": "tickborne"
+                      }
+                    ],
+                    "_flag": "r",
+                    "_p": "0.286",
+                    "_value": "1.0"
+                  }
+                ],
+                "_flag": "r",
+                "_p": "0.132",
+                "_value": "1.0"
+              }
+            ],
+            "_flag": "l",
+            "_p": "0.964",
+            "_value": "1.0"
+          },
+          {
+            "Joint_pain": [
+              {
+                "_flag": "l",
+                "_p": "0.5",
+                "_value": "1.0",
+                "__text": "osteoarthritis"
+              },
+              {
+                "_flag": "r",
+                "_p": "0.5",
+                "_value": "1.0",
+                "__text": "arthiritis_gout"
+              }
+            ],
+            "_flag": "r",
+            "_p": "0.036",
+            "_value": "1.0"
+          }
+        ],
+        "_flag": "l",
+        "_p": "0.982",
+        "_value": "1.0"
+      },
+      {
+        "_flag": "r",
+        "_p": "0.018",
+        "_value": "1.0",
+        "__text": "arthiritis_childhood"
+      }
+    ]
+  }
+}
