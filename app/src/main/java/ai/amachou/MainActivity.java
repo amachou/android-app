@@ -33,8 +33,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SpeechDelegate {
 
@@ -46,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     private LinearLayout linearLayout;
 
     private String userSpeech;
+    private boolean firstTime;
+
+    private Map<String, List<String>> symptomsSynonyms;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,57 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         setContentView(R.layout.activity_main);
 
         Speech.init(this, getPackageName());
+
+        this.firstTime = true;
+        this.symptomsSynonyms = new HashMap<String, List<String>>() {{
+            put("headache", Arrays.asList(
+                    "headache",
+                    "head hurting",
+                    "head pain",
+                    "migraine",
+                    "cephalalgia",
+                    "hemicrania",
+                    "tourmoil"
+            ));
+            put("stomachache", Arrays.asList(
+                    "stomachache",
+                    "stomach pain",
+                    "stomach burn",
+                    "gastritis",
+                    "dyspepsia",
+                    "gastropathies")
+            );
+            put("nausea", Arrays.asList(
+                    "nausea",
+                    "distate",
+                    "heave",
+                    "retch",
+                    "eructation",
+                    "seasickness"
+            ));
+            put("rash", Arrays.asList(
+                    "rash",
+                    "irritation",
+                    "skin inflammation",
+                    "erythema",
+                    "exanthema"
+            ));
+            put("fever", Arrays.asList(
+                    "fever",
+                    "burning up",
+                    "heat",
+                    "ague"
+            ));
+            put("fatigue", Arrays.asList(
+                    "fatigue",
+                    "exhaustion",
+                    "weariness",
+                    "wearing out",
+                    "overwrought",
+                    "knackered"
+            ));
+            put("diarrhea", Arrays.asList("diarrhea","stools","poop"));
+        }};
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -99,16 +156,22 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
         if (requestCode != PERMISSIONS_REQUEST) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         } else {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // permission was granted, yay!
                 onRecordAudioPermissionGranted();
             } else {
-                // permission denied, boo!
-                Toast.makeText(MainActivity.this, R.string.permission_required, Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                        MainActivity.this,
+                        R.string.permission_required,
+                        Toast.LENGTH_LONG
+                ).show();
             }
         }
     }
@@ -117,7 +180,10 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         microphone.setVisibility(View.GONE);
         linearLayout.setVisibility(View.VISIBLE);
         try {
-            Speech.getInstance().say("Hello dear. What is wrong ?");
+            if (firstTime) {
+                Speech.getInstance().say("Hello dear. What is wrong ?");
+                firstTime = false;
+            }
             Speech.getInstance().startListening(progress, MainActivity.this);
         } catch (SpeechRecognitionNotAvailable exc) {
             showSpeechNotSupportedDialog();
@@ -141,9 +207,26 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         microphone.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.GONE);
         this.userSpeech = result;
+        String answer = "Ohh Sorry I didn't hear very well, repeat please !";
+        for (Map.Entry<String, List<String>> entry: this.symptomsSynonyms.entrySet()) {
+            String key = entry.getKey();
+            List<String> values = entry.getValue();
+            boolean found = false;
+            for (String v: values) {
+                if (this.userSpeech.contains(v)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                answer = "Did you say " + key + " ?";
+                break;
+            }
+        }
+        Speech.getInstance().say(answer);
 //        try {
 //            JSONObject jsonObject = new JSONObject(loadJSONFromAsset(getApplicationContext()));
-//            Log.i("JSONObject", jsonObject.toString());
+//            Log.i("   JSONObject", jsonObject.toString());
 //            Iterator<String> keys = jsonObject.keys();
 //            while (keys.hasNext()) {
 //                Log.i("JSONEXT", keys.next());
@@ -152,29 +235,22 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
 //        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
-        if (result.isEmpty()) {
-            Speech.getInstance().say(getString(R.string.repeat));
-        } else {
-            Speech.getInstance().say(result);
-        }
+//        if (result.isEmpty()) {
+//            Speech.getInstance().say(answer);
+//        } else {
+//            Speech.getInstance().say(result);
+//        }
     }
 
     public String loadJSONFromAsset(Context context) {
         String json = null;
         try {
             InputStream is = context.getAssets().open("tree.json");
-
             int size = is.available();
-
             byte[] buffer = new byte[size];
-
             is.read(buffer);
-
             is.close();
-
             json = new String(buffer, "UTF-8");
-
-
         } catch (IOException ex) {
             ex.printStackTrace();
             return null;
