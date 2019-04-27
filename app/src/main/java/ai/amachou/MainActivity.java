@@ -1,6 +1,7 @@
 package ai.amachou;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -23,6 +25,15 @@ import net.gotev.speech.SpeechRecognitionNotAvailable;
 import net.gotev.speech.SpeechUtil;
 import net.gotev.speech.ui.SpeechProgressView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SpeechDelegate {
@@ -49,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         microphone.setOnClickListener(view -> onMicroPhoneClicked());
 
         text = findViewById(R.id.text);
-        // textToSpeech = findViewById(R.id.textToSpeech) ;
         progress = findViewById(R.id.progress);
 
         int[] colors = {
@@ -107,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         microphone.setVisibility(View.GONE);
         linearLayout.setVisibility(View.VISIBLE);
         try {
-            Speech.getInstance().stopTextToSpeech();
+            Speech.getInstance().say("Hello dear. What is wrong ?");
             Speech.getInstance().startListening(progress, MainActivity.this);
         } catch (SpeechRecognitionNotAvailable exc) {
             showSpeechNotSupportedDialog();
@@ -117,7 +127,9 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     }
 
     @Override
-    public void onStartOfSpeech() { }
+    public void onStartOfSpeech() {
+        Log.i("START", "SPEECH STARTED");
+    }
 
     @Override
     public void onSpeechRmsChanged(float value) {
@@ -129,11 +141,46 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         microphone.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.GONE);
         this.userSpeech = result;
+//        try {
+//            JSONObject jsonObject = new JSONObject(loadJSONFromAsset(getApplicationContext()));
+//            Log.i("JSONObject", jsonObject.toString());
+//            Iterator<String> keys = jsonObject.keys();
+//            while (keys.hasNext()) {
+//                Log.i("JSONEXT", keys.next());
+//                Speech.getInstance().say(keys.next());
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
         if (result.isEmpty()) {
             Speech.getInstance().say(getString(R.string.repeat));
         } else {
             Speech.getInstance().say(result);
         }
+    }
+
+    public String loadJSONFromAsset(Context context) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open("tree.json");
+
+            int size = is.available();
+
+            byte[] buffer = new byte[size];
+
+            is.read(buffer);
+
+            is.close();
+
+            json = new String(buffer, "UTF-8");
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+
     }
 
     @Override
