@@ -36,288 +36,301 @@ import org.json.JSONObject;
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback {
 
-        private static final String HOSPITALS_PATH = "hospitals.json";
+    private static final String HOSPITALS_PATH = "hospitals.json";
 
-        private JSONObject nearestHospital;
+    private JSONObject nearestHospital;
 
-        private static final String TAG = MapsActivity.class.getSimpleName();
-        private GoogleMap mMap;
-        private CameraPosition mCameraPosition;
+    private static final String TAG = MapsActivity.class.getSimpleName();
+    private GoogleMap mMap;
+    private CameraPosition mCameraPosition;
 
-        // The entry points to the Places API.
+    // The entry points to the Places API.
 
-        // The entry point to the Fused Location Provider.
-        private FusedLocationProviderClient mFusedLocationProviderClient;
+    // The entry point to the Fused Location Provider.
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
-        // A default location (Sydney, Australia) and default zoom to use when location permission is
-        // not granted.
-        private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
-        private static final int DEFAULT_ZOOM = 15;
-        private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-        private boolean mLocationPermissionGranted;
+    // A default location (Sydney, Australia) and default zoom to use when location permission is
+    // not granted.
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private static final int DEFAULT_ZOOM = 12;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean mLocationPermissionGranted;
 
-        // The geographical location where the device is currently located. That is, the last-known
-        // location retrieved by the Fused Location Provider.
-        private Location userLocation;
+    // The geographical location where the device is currently located. That is, the last-known
+    // location retrieved by the Fused Location Provider.
+    private Location userLocation;
 
-        // Keys for storing activity state.
-        private static final String KEY_CAMERA_POSITION = "camera_position";
-        private static final String KEY_LOCATION = "location";
+    // Keys for storing activity state.
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-                // Retrieve location and camera position from saved instance state.
-                if (savedInstanceState != null) {
-                        userLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-                        mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
-                }
-
-                // Retrieve the content view that renders the map.
-                setContentView(R.layout.activity_maps);
-
-                // Construct a FusedLocationProviderClient.
-                mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-                // Build the map.
-                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.map);
-                mapFragment.getMapAsync(this);
-
+        // Retrieve location and camera position from saved instance state.
+        if (savedInstanceState != null) {
+            userLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
 
-        /**
-         * Saves the state of the map when the activity is paused.
-         */
-        @Override
-        protected void onSaveInstanceState(Bundle outState) {
-                if (mMap != null) {
-                        outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
-                        outState.putParcelable(KEY_LOCATION, userLocation);
-                        super.onSaveInstanceState(outState);
-                }
+        // Retrieve the content view that renders the map.
+        setContentView(R.layout.activity_maps);
+
+        // Construct a FusedLocationProviderClient.
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Build the map.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+    }
+
+    /**
+     * Saves the state of the map when the activity is paused.
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, userLocation);
+            super.onSaveInstanceState(outState);
         }
+    }
 
-        /**
-         * Manipulates the map when it's available.
-         * This callback is triggered when the map is ready to be used.
-         */
-        @Override
-        public void onMapReady(GoogleMap map) {
-                mMap = map;
+    /**
+     * Manipulates the map when it's available.
+     * This callback is triggered when the map is ready to be used.
+     */
+    @Override
+    public void onMapReady(GoogleMap map) {
+        mMap = map;
 
-                // Prompt the user for permission.
-                getLocationPermission();
+        // Prompt the user for permission.
+        getLocationPermission();
 
-                // Turn on the My Location layer and the related control on the map.
-                updateLocationUI();
+        // Turn on the My Location layer and the related control on the map.
+        updateLocationUI();
 
-                // Get the current location of the device and set the position of the map.
-                getDeviceLocation();
-        }
+        // Get the current location of the device and set the position of the map.
+        getDeviceLocation();
+    }
 
-        /**
-         * Gets the current location of the device, and positions the map's camera.
-         */
-        private void getDeviceLocation() {
-                /*
-                 * Get the best and most recent location of the device, which may be null in rare
-                 * cases when a location is not available.
-                 */
-                try {
-                        if (mLocationPermissionGranted) {
-                                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-                                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Location> task) {
-                                                if (task.isSuccessful()) {
-                                                        // Set the map's camera position to the current location of the device.
-                                                        userLocation = task.getResult();
-                                                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                                                new LatLng(userLocation.getLatitude(),
-                                                                        userLocation.getLongitude()), DEFAULT_ZOOM));
+    /**
+     * Gets the current location of the device, and positions the map's camera.
+     */
+    private void getDeviceLocation() {
+        try {
+            if (mLocationPermissionGranted) {
+                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        userLocation = task.getResult();
+                        Log.i("LOCATION: ",
+                                userLocation.getLongitude() + " | " + userLocation.getLatitude()
+                        );
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(
+                                        userLocation.getLatitude(),
+                                        userLocation.getLongitude()
+                                ),
+                                DEFAULT_ZOOM
+                        ));
 
-                                                        displayNearestHospital();
-                                                } else {
-                                                        Log.d(TAG, "Current location is null. Using defaults.");
-                                                        Log.e(TAG, "Exception: %s", task.getException());
-                                                        mMap.moveCamera(CameraUpdateFactory
-                                                                .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                                                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                                                }
-                                        }
-                                });
-                        }
-                } catch (SecurityException e)  {
-                        Log.e("Exception: %s", e.getMessage());
-                }
-        }
-
-
-        /**
-         * Prompts the user for permission to use the device location.
-         */
-        private void getLocationPermission() {
-                /*
-                 * Request location permission, so that we can get the location of the
-                 * device. The result of the permission request is handled by a callback,
-                 * onRequestPermissionsResult.
-                 */
-                if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                        android.Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-                        mLocationPermissionGranted = true;
-                } else {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                }
-        }
-
-        /**
-         * Handles the result of the request for location permissions.
-         */
-        @Override
-        public void onRequestPermissionsResult(int requestCode,
-                                               @NonNull String permissions[],
-                                               @NonNull int[] grantResults) {
-                mLocationPermissionGranted = false;
-                switch (requestCode) {
-                        case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                                // If request is cancelled, the result arrays are empty.
-                                if (grantResults.length > 0
-                                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                                        mLocationPermissionGranted = true;
-                                }
-                        }
-                }
-                updateLocationUI();
-        }
-
-        /**
-         * Prompts the user to select the current place from a list of likely places, and shows the
-         * current place on the map - provided the user has granted location permission.
-         */
-        private void showCurrentPlace() {
-                if (mMap == null) {
-                        return;
-                }
-
-                if (mLocationPermissionGranted) {
                         displayNearestHospital();
-                } else {
-                        // The user has not granted permission.
-                        Log.i(TAG, "The user did not grant location permission.");
 
-                        // Add a default marker, because the user hasn't selected a place.
                         try {
-                                mMap.addMarker(new MarkerOptions()
-                                        .title(this.nearestHospital.getString("name"))
-                                        .position(new LatLng(this.nearestHospital.getDouble("Y"), this.nearestHospital.getDouble("X")))
-                                        .snippet("Hello"));
+                            LatLng hospital = new LatLng(
+                                    nearestHospital.getDouble("X"),
+                                    nearestHospital.getDouble("Y")
+                            );
+                            mMap.addMarker(new MarkerOptions().position(hospital)
+                                    .title(nearestHospital.getString("name")));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hospital, DEFAULT_ZOOM));
                         } catch (JSONException e) {
-                                e.printStackTrace();
+                            e.printStackTrace();
                         }
 
-                        // Prompt the user for permission.
-                        getLocationPermission();
-                }
-        }
 
-        /**
-         * Updates the map's UI settings based on whether the user has granted location permission.
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.e(TAG, "Exception: %s", task.getException());
+                        mMap.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    }
+                });
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+
+    /**
+     * Prompts the user for permission to use the device location.
+     */
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
          */
-        private void updateLocationUI() {
-                if (mMap == null) {
-                        return;
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    /**
+     * Handles the result of the request for location permissions.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
                 }
-                try {
-                        if (mLocationPermissionGranted) {
-                                mMap.setMyLocationEnabled(true);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                        } else {
-                                mMap.setMyLocationEnabled(false);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                                userLocation = null;
-                                getLocationPermission();
-                        }
-                } catch (SecurityException e)  {
-                        Log.e("Exception: %s", e.getMessage());
-                }
+            }
+        }
+        updateLocationUI();
+    }
+
+    /**
+     * Prompts the user to select the current place from a list of likely places, and shows the
+     * current place on the map - provided the user has granted location permission.
+     */
+    private void showCurrentPlace() {
+        if (mMap == null) {
+            return;
         }
 
-        private double distance(LatLng a, LatLng b, char unit) {
-                double theta = a.longitude - b.longitude;
-                double dist = Math.sin(
-                        deg2rad(a.latitude)) * Math.sin(deg2rad(b.latitude)
-                ) + Math.cos(deg2rad(a.latitude)) * Math.cos(deg2rad(b.latitude)) * Math.cos(deg2rad(theta));
+        if (mLocationPermissionGranted) {
+            displayNearestHospital();
+        } else {
+            // The user has not granted permission.
+            Log.i(TAG, "The user did not grant location permission.");
 
-                dist = Math.acos(dist);
-                dist = rad2deg(dist);
-                dist = dist * 60 * 1.1515;
-                if (unit == 'K') {
-                        dist = dist * 1.609344;
-                } else if (unit == 'N') {
-                        dist = dist * 0.8684;
-                }
-                return (dist);
+            // Add a default marker, because the user hasn't selected a place.
+            try {
+                mMap.addMarker(new MarkerOptions()
+                        .title(this.nearestHospital.getString("name"))
+                        .position(new LatLng(this.nearestHospital.getDouble("Y"), this.nearestHospital.getDouble("X")))
+                        .snippet("Hello"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // Prompt the user for permission.
+            getLocationPermission();
         }
+    }
 
-        private double deg2rad(double deg) {
-                return (deg * Math.PI / 180.0);
+    /**
+     * Updates the map's UI settings based on whether the user has granted location permission.
+     */
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
         }
-
-        private double rad2deg(double rad) {
-                return (rad * 180.0 / Math.PI);
+        try {
+            if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                userLocation = null;
+                getLocationPermission();
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
         }
+    }
 
-        public JSONObject getNearestHospital(Location userLocation, JSONArray hospitals) throws JSONException {
-                double prevDist = Double.MAX_VALUE;
-                JSONObject nearestHospital = hospitals.getJSONObject(0);
-                for (int i = 0; i < hospitals.length(); i++) {
-                        JSONObject hospital = hospitals.getJSONObject(i);
-                        LatLng hospitalPosition = new LatLng(
-                                hospital.getDouble("Y"),
-                                hospital.getDouble("X")
-                        );
-                        LatLng userPosition = new LatLng(
-                                userLocation.getLatitude(),
-                                userLocation.getLongitude()
-                        );
-                        double currDist = distance(hospitalPosition, userPosition, 'K');
-                        if (currDist < prevDist) {
-                                prevDist = currDist;
-                                nearestHospital = hospital;
-                        }
-                }
-                return nearestHospital;
+    private double distance(LatLng a, LatLng b, char unit) {
+        double theta = a.longitude - b.longitude;
+        double dist = Math.sin(
+                deg2rad(a.latitude)) * Math.sin(deg2rad(b.latitude)
+        ) + Math.cos(deg2rad(a.latitude)) * Math.cos(deg2rad(b.latitude)) * Math.cos(deg2rad(theta));
+
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == 'K') {
+            dist = dist * 1.609344;
+        } else if (unit == 'N') {
+            dist = dist * 0.8684;
         }
+        return (dist);
+    }
 
-        public void displayNearestHospital() {
-                try {
-                        JSONArray hospitals = Helper.loadJSONFile(
-                                getApplicationContext(),
-                                HOSPITALS_PATH
-                        ).getJSONArray("data");
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
 
-                        this.nearestHospital = getNearestHospital(userLocation, hospitals);
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
+    }
 
-                        String dialogMsg = this.nearestHospital != null ?
-                                getResources().getString(
-                                        R.string.the_nearest_hospital_is
-                                ) + this.nearestHospital.getString("name") :
-                                getResources().getString(R.string.unable_to_read_gps_informations);
-
-                        new AlertDialog
-                                .Builder(this)
-                                .setMessage(dialogMsg)
-                                .setCancelable(true)
-                                .show();
-                } catch (JSONException e) {
-                        e.printStackTrace();
-                }
+    public JSONObject getNearestHospital(Location userLocation, JSONArray hospitals) throws JSONException {
+        double prevDist = Double.MAX_VALUE;
+        JSONObject nearestHospital = hospitals.getJSONObject(0);
+        for (int i = 0; i < hospitals.length(); i++) {
+            JSONObject hospital = hospitals.getJSONObject(i);
+            LatLng hospitalPosition = new LatLng(
+                    hospital.getDouble("Y"),
+                    hospital.getDouble("X")
+            );
+            LatLng userPosition = new LatLng(
+                    userLocation.getLatitude(),
+                    userLocation.getLongitude()
+            );
+            double currDist = distance(hospitalPosition, userPosition, 'K');
+            if (currDist < prevDist) {
+                prevDist = currDist;
+                nearestHospital = hospital;
+            }
         }
+        return nearestHospital;
+    }
+
+    public void displayNearestHospital() {
+        try {
+            JSONArray hospitals = Helper.loadJSONFile(
+                    getApplicationContext(),
+                    HOSPITALS_PATH
+            ).getJSONArray("data");
+
+            this.nearestHospital = getNearestHospital(userLocation, hospitals);
+
+            String dialogMsg = this.nearestHospital != null ?
+                    getResources().getString(
+                            R.string.the_nearest_hospital_is
+                    ) + this.nearestHospital.getString("name") :
+                    getResources().getString(R.string.unable_to_read_gps_informations);
+
+            new AlertDialog
+                    .Builder(this)
+                    .setMessage(dialogMsg)
+                    .setCancelable(true)
+                    .show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 //public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {

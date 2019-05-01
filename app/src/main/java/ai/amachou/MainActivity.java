@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.gotev.speech.GoogleVoiceTypingDisabledException;
@@ -27,8 +29,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity implements SpeechDelegate {
@@ -50,20 +54,30 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     private static final String DECISION_TREE_PATH = "tree.json";
     private static final String BOOT_SYNONYMS_PATH = "boot_symptoms.json";
 
+    TextView text, textUser;
+
     boolean conversationStarted = false;
+
+    String[] questions = new String[]{
+            "Are you suffering from",
+            "Please give us further informations. Do you have",
+            "Do you have",
+            "We are going to ask you some more questions. Are you noticing "
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        text = findViewById(R.id.text);
+        textUser = findViewById(R.id.textUser);
+
         this.decisionTree = Helper.loadJSONFile(getApplicationContext(), DECISION_TREE_PATH);
         this.initSymptoms = Helper.loadJSONFile(getApplicationContext(), BOOT_SYNONYMS_PATH);
 
         this.assistant = Speech.init(this, getPackageName());
         this.firstTime = true;
-
-        // this.userAnswering = this.assistant.isListening() && !firstTime;
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -80,6 +94,15 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
                 ContextCompat.getColor(this, android.R.color.holo_red_dark)
         };
         progress.setColors(colors);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Handler h = new Handler();
+        h.postDelayed(() -> {
+            this.assistant.say("Hello dear. I am a virtuel assistant for medical prediction. What is wrong?");
+        }, 500);
     }
 
     @Override
@@ -195,8 +218,8 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         try {
             builder.setMessage(
-                    "There are " + pred.getDouble("_p") + " chances that you are suffering from Chronique Fatigue. " +
-                            "Do you want me to show you the nearest hospital ?"
+                    "There are " + pred.getDouble("_p") + " chances that you are suffering from " + pred.getString("_n") +
+                            ". Do you want me to show you the nearest hospital ?"
             ).setPositiveButton("Yes, I want", dialogClickListener)
                     .setNegativeButton("No, there is no need", dialogClickListener)
                     .setCancelable(true).show();
@@ -209,7 +232,13 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     public void onSpeechResult(String speech) {
         this.toggleMicroPhone(false);
 
+        textUser.setText(speech);
+
         Log.i("SPEECH", speech);
+        if (left != null && right != null) {
+            Log.i("SPEECH", left);
+            Log.i("SPEECH", right);
+        }
 
         JSONObject symptomNode = null;
 
@@ -217,17 +246,24 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
             String symptom = this.getInitSymptomFromSpeech(this.initSymptoms, speech);
             if (symptom == null) {
                 this.assistant.say(getResources().getString(R.string.repeat));
+                text.setText(getResources().getString(R.string.repeat));
                 return;
             }
             symptomNode = findSymptomInTree(symptom, this.decisionTree);
             if (symptomNode == null) {
                 this.assistant.say(getResources().getString(R.string.repeat));
+                text.setText(getResources().getString(R.string.repeat));
                 return;
             }
         } else {
-            if (speech.contains("yes")) {
+            if (speech.contains("yes") ||
+                    speech.contains("maybe") ||
+                    speech.contains("perhaps") ||
+                    speech.contains("obviously")
+            ) {
                 symptomNode = findSymptomInTree(left, decisionTree);
             } else {
+                Log.i("IN NO", right);
                 symptomNode = findSymptomInTree(right, decisionTree);
             }
         }
@@ -238,6 +274,8 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     }
 
     private void traverseTree(JSONObject symptomNode) {
+        int questionIndice = new Random().nextInt(questions.length);
+        String question = questions[questionIndice];
         try {
             JSONObject l = symptomNode.getJSONObject("left");
             JSONObject r = symptomNode.getJSONObject("right");
@@ -249,19 +287,27 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
                 if (l.getBoolean("is_leaf")) {
                     String msg = "I am " + String.format("%.2f", leftP * 100) + " percent sure that you have " + leftN;
                     this.assistant.say(msg);
+                    text.setText(msg);
                     showPredictions(l);
+                    this.conversationStarted = false;
                 } else {
-                    this.assistant.say("Do you have " + leftN);
+                    this.assistant.say(question + " " + leftN);
+                    text.setText(question + " " + leftN);
                     this.left = leftN;
+                    this.right = rightN;
                 }
             } else {
                 if (r.getBoolean("is_leaf")) {
                     String msg = "I am " + String.format("%.2f", rightP * 100) + " percent sure that you have " + rightN;
                     this.assistant.say(msg);
+                    text.setText(msg);
                     showPredictions(r);
+                    this.conversationStarted = false;
                 } else {
-                    this.assistant.say("Do you have " + rightN);
+                    this.assistant.say(question + " " + rightN);
+                    text.setText(question + " " + rightN);
                     this.right = rightN;
+                    this.left = leftN;
                 }
             }
         } catch (JSONException e) {
@@ -297,7 +343,13 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
      * @param results the user's speech partials
      */
     @Override
-    public void onSpeechPartialResults(List<String> results) { }
+    public void onSpeechPartialResults(List<String> results) {
+        String msg = "";
+        for (String result: results) {
+            msg += result + " ";
+        }
+        textUser.setText(textUser.getText().toString() + msg);
+    }
 
 
     private void showSpeechNotSupportedDialog() {

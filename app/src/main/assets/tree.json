@@ -284,18 +284,199 @@
     "right": {
       "is_leaf": true,
       "_p": "0.5",
-      "_n": "0.5"
+      "_n": "gadiasis"
     }
   },
-  "blood stool": [],
-  "body_aches": [],
-  "redness": [],
-  "nausea": [],
-  "weakness": [],
-  "diarrhea": [],
-  "pain aching one joint": [],
-  "tiredness": [],
-  "seizures": [],
-  "organ inflammation": [],
-  "Fever": []
+  "blood stool": {
+    "left": {
+      "is_leaf": false,
+      "_n": "burning sensation urinating",
+      "_p": "0.667"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.333",
+      "_n": "colorectal cancer"
+    }
+  },
+  "burning sensation urinating": {
+    "left": {
+      "is_leaf": true,
+      "_n": "gonorrhea women",
+      "_p": "0.5"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "gonorrhea men"
+    }
+  },
+  "body aches": {
+    "left": {
+      "is_leaf": false,
+      "_n": "redness",
+      "_p": "0.6"
+    },
+    "right": {
+      "is_leaf": false,
+      "_p": "0.4",
+      "_n": "cough"
+    }
+  },
+  "redness": {
+    "left": {
+      "is_leaf": false,
+      "_n": "nausea",
+      "_p": "0.667"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.333",
+      "_n": "chronique fatigue"
+    }
+  },
+  "nausea": {
+    "left": {
+      "is_leaf": true,
+      "_n": "head neck cancer",
+      "_p": "0.5"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "bacterial meningitis"
+    }
+  },
+  "cough": {
+    "left": {
+      "is_leaf": false,
+      "_n": "smallpox",
+      "_p": "0.5"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "cold"
+    }
+  },
+  "fatigue": {
+    "left": {
+      "is_leaf": false,
+      "_n": "nausea",
+      "_p": "0.667"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.333",
+      "_n": "pulmonary hypertension"
+    }
+  },
+  "nausea": {
+    "left": {
+      "is_leaf": true,
+      "_n": "lung cancer",
+      "_p": "0.5"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "heart disease"
+    }
+  },
+  "weakness": {
+    "left": {
+      "is_leaf": true,
+      "_n": "septicemic plague",
+      "_p": "0.5"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "diphteria"
+    }
+  },
+  "diarrhea": {
+    "left": {
+      "is_leaf": true,
+      "_n": "malaria",
+      "_p": "0.5"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "norovirus"
+    }
+  },
+  "weakness": {
+    "left": {
+      "is_leaf": false,
+      "_n": "diarrhea",
+      "_p": "0.667"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.333",
+      "_n": "bubonic plague"
+    }
+  },
+  "cough": {
+    "left": {
+      "is_leaf": false,
+      "_n": "headache",
+      "_p": "0.833"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.167",
+      "_n": "pneumonic plague"
+    }
+  },
+  "pain aching one joint": {
+    "left": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "pneumocystis"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "arthiritis rhumatoid"
+    }
+  },
+  "tiredness": {
+    "left": {
+      "is_leaf": false,
+      "_p": "0.833",
+      "_n": "fever"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.167",
+      "_n": "varicella"
+    }
+  },
+  "fever": {
+    "left": {
+      "is_leaf": false,
+      "_p": "0.4",
+      "_n": "blood urine"
+    },
+    "right": {
+      "is_leaf": false,
+      "_p": "0.6",
+      "_n": "fatigue"
+    }
+  },
+  "blood urine": {
+    "left": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "kidney disease"
+    },
+    "right": {
+      "is_leaf": true,
+      "_p": "0.5",
+      "_n": "kidney renalpelvis cancer"
+    }
+  }
 }
