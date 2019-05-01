@@ -1,0 +1,53 @@
+{
+  "rash": [
+    "rash",
+    "irritation",
+    "skin inflammation",
+    "erythema",
+    "exanthema"
+  ],
+  "fever": [
+    "fever",
+    "burning up",
+    "heat",
+    "ague"
+  ],
+  "nausea": [
+    "nausea",
+    "distate",
+    "heave",
+    "retch",
+    "eructation",
+    "seasickness"
+  ],
+  "fatigue": [
+    "fatigue",
+    "exhaustion",
+    "weariness",
+    "wearing out",
+    "overwrought",
+    "knackered"
+  ],
+  "diarrhea": [
+    "diarrhea",
+    "stools",
+    "poop"
+  ],
+  "headache": [
+    "headache",
+    "head hurting",
+    "head pain",
+    "migraine",
+    "cephalalgia",
+    "hemicrania",
+    "tourmoil"
+  ],
+  "stomachache": [
+    "stomachache",
+    "stomach pain",
+    "stomach burn",
+    "gastritis",
+    "dyspepsia",
+    "gastropathies"
+  ]
+}

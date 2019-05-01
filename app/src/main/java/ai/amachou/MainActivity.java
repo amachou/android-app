@@ -1,8 +1,8 @@
 package ai.amachou;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -10,12 +10,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import net.gotev.speech.GoogleVoiceTypingDisabledException;
@@ -25,98 +23,53 @@ import net.gotev.speech.SpeechRecognitionNotAvailable;
 import net.gotev.speech.SpeechUtil;
 import net.gotev.speech.ui.SpeechProgressView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity implements SpeechDelegate {
 
     private final int PERMISSIONS_REQUEST = 1;
 
     private ImageButton microphone;
-    private TextView text;
     private SpeechProgressView progress;
     private LinearLayout linearLayout;
 
-    private String userSpeech;
     private boolean firstTime;
+    private Speech assistant;
+    private JSONObject decisionTree;
+    private JSONObject initSymptoms;
+    private JSONObject initSymptomNode = null;
 
-    private Map<String, List<String>> symptomsSynonyms;
+    private String left, right;
+
+    private static final String DECISION_TREE_PATH = "tree.json";
+    private static final String BOOT_SYNONYMS_PATH = "boot_symptoms.json";
+
+    boolean conversationStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Speech.init(this, getPackageName());
+        this.decisionTree = Helper.loadJSONFile(getApplicationContext(), DECISION_TREE_PATH);
+        this.initSymptoms = Helper.loadJSONFile(getApplicationContext(), BOOT_SYNONYMS_PATH);
 
+        this.assistant = Speech.init(this, getPackageName());
         this.firstTime = true;
-        this.symptomsSynonyms = new HashMap<String, List<String>>() {{
-            put("headache", Arrays.asList(
-                    "headache",
-                    "head hurting",
-                    "head pain",
-                    "migraine",
-                    "cephalalgia",
-                    "hemicrania",
-                    "tourmoil"
-            ));
-            put("stomachache", Arrays.asList(
-                    "stomachache",
-                    "stomach pain",
-                    "stomach burn",
-                    "gastritis",
-                    "dyspepsia",
-                    "gastropathies")
-            );
-            put("nausea", Arrays.asList(
-                    "nausea",
-                    "distate",
-                    "heave",
-                    "retch",
-                    "eructation",
-                    "seasickness"
-            ));
-            put("rash", Arrays.asList(
-                    "rash",
-                    "irritation",
-                    "skin inflammation",
-                    "erythema",
-                    "exanthema"
-            ));
-            put("fever", Arrays.asList(
-                    "fever",
-                    "burning up",
-                    "heat",
-                    "ague"
-            ));
-            put("fatigue", Arrays.asList(
-                    "fatigue",
-                    "exhaustion",
-                    "weariness",
-                    "wearing out",
-                    "overwrought",
-                    "knackered"
-            ));
-            put("diarrhea", Arrays.asList("diarrhea","stools","poop"));
-        }};
+
+        // this.userAnswering = this.assistant.isListening() && !firstTime;
 
         linearLayout = findViewById(R.id.linearLayout);
 
         microphone = findViewById(R.id.button);
         microphone.setOnClickListener(view -> onMicroPhoneClicked());
 
-        text = findViewById(R.id.text);
         progress = findViewById(R.id.progress);
 
         int[] colors = {
@@ -132,15 +85,18 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Speech.getInstance().shutdown();
+        this.assistant.shutdown();
     }
 
+    @Override
+    public void onStartOfSpeech() {}
+
     private void onMicroPhoneClicked() {
-        if (Speech.getInstance().isListening()) {
-            Speech.getInstance().stopListening();
+        if (this.assistant.isListening()) {
+            this.assistant.stopListening();
         } else {
             int recordAudioPermission = ContextCompat.checkSelfPermission(
-                    this,
+                    getApplicationContext(),
                     Manifest.permission.RECORD_AUDIO
             );
             if (recordAudioPermission == PackageManager.PERMISSION_GRANTED) {
@@ -165,6 +121,10 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         } else {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (this.firstTime) {
+                    this.assistant.say("Hello dear. What is wrong ?");
+                    this.firstTime = false;
+                }
                 onRecordAudioPermissionGranted();
             } else {
                 Toast.makeText(
@@ -176,15 +136,16 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         }
     }
 
+    public void toggleMicroPhone(boolean talking) {
+        microphone.setVisibility(talking ? View.GONE : View.VISIBLE);
+        linearLayout.setVisibility(talking ? View.VISIBLE : View.GONE);
+    }
+
     private void onRecordAudioPermissionGranted() {
-        microphone.setVisibility(View.GONE);
-        linearLayout.setVisibility(View.VISIBLE);
+        this.toggleMicroPhone(true);
         try {
-            if (firstTime) {
-                Speech.getInstance().say("Hello dear. What is wrong ?");
-                firstTime = false;
-            }
-            Speech.getInstance().startListening(progress, MainActivity.this);
+            this.assistant.startListening(progress, MainActivity.this);
+            if (this.initSymptomNode != null) Log.i("TEST", this.initSymptomNode.toString());
         } catch (SpeechRecognitionNotAvailable exc) {
             showSpeechNotSupportedDialog();
         } catch (GoogleVoiceTypingDisabledException exc) {
@@ -193,79 +154,151 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
     }
 
     @Override
-    public void onStartOfSpeech() {
-        Log.i("START", "SPEECH STARTED");
-    }
+    public void onSpeechRmsChanged(float value) { }
 
-    @Override
-    public void onSpeechRmsChanged(float value) {
-        //Log.d(getClass().getSimpleName(), "Speech recognition rms is now " + value +  "dB");
-    }
-
-    @Override
-    public void onSpeechResult(String result) {
-        microphone.setVisibility(View.VISIBLE);
-        linearLayout.setVisibility(View.GONE);
-        this.userSpeech = result;
-        String answer = "Ohh Sorry I didn't hear very well, repeat please !";
-        for (Map.Entry<String, List<String>> entry: this.symptomsSynonyms.entrySet()) {
-            String key = entry.getKey();
-            List<String> values = entry.getValue();
-            boolean found = false;
-            for (String v: values) {
-                if (this.userSpeech.contains(v)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                answer = "Did you say " + key + " ?";
-                break;
-            }
-        }
-        Speech.getInstance().say(answer);
-//        try {
-//            JSONObject jsonObject = new JSONObject(loadJSONFromAsset(getApplicationContext()));
-//            Log.i("   JSONObject", jsonObject.toString());
-//            Iterator<String> keys = jsonObject.keys();
-//            while (keys.hasNext()) {
-//                Log.i("JSONEXT", keys.next());
-//                Speech.getInstance().say(keys.next());
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        if (result.isEmpty()) {
-//            Speech.getInstance().say(answer);
-//        } else {
-//            Speech.getInstance().say(result);
-//        }
-    }
-
-    public String loadJSONFromAsset(Context context) {
-        String json = null;
+    public String getInitSymptomFromSpeech(JSONObject symptoms, String speech) {
         try {
-            InputStream is = context.getAssets().open("tree.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            return findSymptomFromUserSpeech(symptoms, speech);
+        } catch (JSONException e) {
+            e.printStackTrace();
             return null;
         }
-        return json;
+    }
 
+    public JSONObject findSymptomInTree(String symptom, JSONObject tree) {
+        Iterator<String> jsonKeys = tree.keys();
+        while (jsonKeys.hasNext()) {
+            String v = jsonKeys.next().toLowerCase().trim();
+            if (v.contains(symptom.toLowerCase().trim())) {
+                try {
+                    return tree.getJSONObject(v);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void showPredictions(JSONObject pred) {
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    Intent i = new Intent(getApplicationContext(), MapsActivity.class);
+                    startActivity(i);
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    break;
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        try {
+            builder.setMessage(
+                    "There are " + pred.getDouble("_p") + " chances that you are suffering from Chronique Fatigue. " +
+                            "Do you want me to show you the nearest hospital ?"
+            ).setPositiveButton("Yes, I want", dialogClickListener)
+                    .setNegativeButton("No, there is no need", dialogClickListener)
+                    .setCancelable(true).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void onSpeechPartialResults(List<String> results) {
-        text.setText("");
-        for (String partial: results) {
-            text.append(partial + " ");
+    public void onSpeechResult(String speech) {
+        this.toggleMicroPhone(false);
+
+        Log.i("SPEECH", speech);
+
+        JSONObject symptomNode = null;
+
+        if (!conversationStarted) {
+            String symptom = this.getInitSymptomFromSpeech(this.initSymptoms, speech);
+            if (symptom == null) {
+                this.assistant.say(getResources().getString(R.string.repeat));
+                return;
+            }
+            symptomNode = findSymptomInTree(symptom, this.decisionTree);
+            if (symptomNode == null) {
+                this.assistant.say(getResources().getString(R.string.repeat));
+                return;
+            }
+        } else {
+            if (speech.contains("yes")) {
+                symptomNode = findSymptomInTree(left, decisionTree);
+            } else {
+                symptomNode = findSymptomInTree(right, decisionTree);
+            }
+        }
+
+        this.traverseTree(symptomNode);
+        this.conversationStarted = true;
+
+    }
+
+    private void traverseTree(JSONObject symptomNode) {
+        try {
+            JSONObject l = symptomNode.getJSONObject("left");
+            JSONObject r = symptomNode.getJSONObject("right");
+            double leftP = Double.parseDouble(l.getString("_p"));
+            double rightP = Double.parseDouble(r.getString("_p"));
+            String leftN = l.getString("_n");
+            String rightN = r.getString("_n");
+            if (leftP > rightP) {
+                if (l.getBoolean("is_leaf")) {
+                    String msg = "I am " + String.format("%.2f", leftP * 100) + " percent sure that you have " + leftN;
+                    this.assistant.say(msg);
+                    showPredictions(l);
+                } else {
+                    this.assistant.say("Do you have " + leftN);
+                    this.left = leftN;
+                }
+            } else {
+                if (r.getBoolean("is_leaf")) {
+                    String msg = "I am " + String.format("%.2f", rightP * 100) + " percent sure that you have " + rightN;
+                    this.assistant.say(msg);
+                    showPredictions(r);
+                } else {
+                    this.assistant.say("Do you have " + rightN);
+                    this.right = rightN;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
+
+    /**
+     * Takes the user's speech and the map of symptoms and returns the corresponding symptom or null
+     * if no symptom found for that speech.
+     *
+     * @param symptomsSynonyms the map of symptoms => synonyms
+     * @param speech the user's speech
+     * @return the found symptom | null
+     */
+    private String findSymptomFromUserSpeech(JSONObject symptomsSynonyms, String speech) throws JSONException {
+        Iterator<String> iterator = symptomsSynonyms.keys();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            JSONArray values = symptomsSynonyms.getJSONArray(key);
+            for (int i = 0; i < values.length(); i++) {
+                if (speech.contains(values.getString(i))) {
+                    return key;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Triggered whenever the user says something
+     *
+     * @param results the user's speech partials
+     */
+    @Override
+    public void onSpeechPartialResults(List<String> results) { }
+
 
     private void showSpeechNotSupportedDialog() {
         DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
@@ -290,9 +323,7 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.enable_google_voice_typing)
                 .setCancelable(false)
-                .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
-                    // do nothing
-                })
+                .setPositiveButton(R.string.yes, (dialogInterface, i) -> {})
                 .show();
     }
 
