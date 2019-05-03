@@ -52,7 +52,7 @@ public class MapsActivity extends AppCompatActivity
     // A default location (Sydney, Australia) and default zoom to use when location permission is
     // not granted.
     private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
-    private static final int DEFAULT_ZOOM = 12;
+    private static final int DEFAULT_ZOOM = 7;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
 
@@ -127,27 +127,18 @@ public class MapsActivity extends AppCompatActivity
                 locationResult.addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         userLocation = task.getResult();
-                        Log.i("LOCATION: ",
-                                userLocation.getLongitude() + " | " + userLocation.getLatitude()
-                        );
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(
-                                        userLocation.getLatitude(),
-                                        userLocation.getLongitude()
-                                ),
-                                DEFAULT_ZOOM
-                        ));
 
                         displayNearestHospital();
 
                         try {
                             LatLng hospital = new LatLng(
-                                    nearestHospital.getDouble("X"),
-                                    nearestHospital.getDouble("Y")
+                                    nearestHospital.getDouble("Y"),
+                                    nearestHospital.getDouble("X")
                             );
                             mMap.addMarker(new MarkerOptions().position(hospital)
                                     .title(nearestHospital.getString("name")));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hospital, DEFAULT_ZOOM));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(hospital, 12));
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hospital, 3));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -157,7 +148,7 @@ public class MapsActivity extends AppCompatActivity
                         Log.d(TAG, "Current location is null. Using defaults.");
                         Log.e(TAG, "Exception: %s", task.getException());
                         mMap.moveCamera(CameraUpdateFactory
-                                .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                                .newLatLngZoom(mDefaultLocation, 3));
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
                 });
@@ -319,7 +310,7 @@ public class MapsActivity extends AppCompatActivity
             String dialogMsg = this.nearestHospital != null ?
                     getResources().getString(
                             R.string.the_nearest_hospital_is
-                    ) + this.nearestHospital.getString("name") :
+                    ) + " " + this.nearestHospital.getString("name") :
                     getResources().getString(R.string.unable_to_read_gps_informations);
 
             new AlertDialog

@@ -34,6 +34,6 @@
     <string name="no">No</string>
     <string name="title_activity_maps">Hospitals Map</string>
     <string name="unable_to_read_gps_informations">Erreur lors de la tentative de récupération de votre position géographique. Pour de meilleurs performances assurez-vous d\'avor activer votre GPS</string>
-    <string name="the_nearest_hospital_is">L\'hopital le plus de vous est:</string>
+    <string name="the_nearest_hospital_is">The nearest hospital is </string>
     <string name="location_permission_denied_msg">You have denied the location permission. We are sorry but we won\'t be able to locate you correctly</string>
 </resources>

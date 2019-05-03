@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         try {
             builder.setMessage(
-                    "There are " + pred.getDouble("_p") + " chances that you are suffering from " + pred.getString("_n") +
+                    "There are " + (pred.getDouble("_p") * 100) + " chances that you are suffering from " + pred.getString("_n") +
                             ". Do you want me to show you the nearest hospital ?"
             ).setPositiveButton("Yes, I want", dialogClickListener)
                     .setNegativeButton("No, there is no need", dialogClickListener)
@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements SpeechDelegate {
                 }
             } else {
                 if (r.getBoolean("is_leaf")) {
-                    String msg = "I am " + String.format("%.2f", rightP * 100) + " percent sure that you have " + rightN;
+                    String msg = "I have found a probability of " + String.format("%.2f", rightP * 100) + "  that you have " + rightN;
                     this.assistant.say(msg);
                     text.setText(msg);
                     showPredictions(r);
